@@ -10,7 +10,7 @@ export load_obj, get_indexed, isvalid, add_normals, add_values, delete_values_at
 
 const defaultIds = [:position, :texCoord, :normal]
 
-typealias ITuple{N} NTuple{N, Int}
+ITuple{N} = NTuple{N, Int}
 
 type ObjModel
   values::Vector{Matrix} # vector of data streams, each containing a type of values (positions, texture coordinates, normals)
@@ -267,7 +267,7 @@ function add_values(model::ObjModel, id::Symbol, dim::Int; elType::DataType = Fl
   @assert isvalid(model)
   push!(model.values, Matrix{elType}(dim, 0))
   push!(model.valueIds, id)
-  map!(model.faces) do face
+  map!(model.faces, model.faces) do face
     vcat(face, fill(0, 1, size(face, 2)))
   end
   return length(model.values)
@@ -277,7 +277,7 @@ function delete_values_at(model::ObjModel, ind::Int)
   @assert isvalid(model)
   deleteat!(model.values, ind)
   deleteat!(model.valueIds, ind)
-  map!(model.faces) do face
+  map!(model.faces, model.faces) do face
     face[[i!=ind for i = 1:size(face, 1)], :]
   end
   nothing
