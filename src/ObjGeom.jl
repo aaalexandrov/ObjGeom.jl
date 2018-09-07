@@ -12,7 +12,7 @@ const defaultIds = [:position, :texCoord, :normal]
 
 ITuple{N} = NTuple{N, Int}
 
-type ObjModel
+mutable struct ObjModel
   values::Vector{Matrix} # vector of data streams, each containing a type of values (positions, texture coordinates, normals)
   faces::Vector{Matrix{Int}} # vector of face data, each face containing indices inside values for each vertex
   valueIds::Vector{Symbol}
@@ -39,9 +39,9 @@ end
 
 load_obj(file::String) = open(io->load_obj(io), file)
 
-function load_obj(io::IOStream)
-  const defaults = [ [0f0, 0f0, 0f0, 1f0], [0f0, 0f0, 0f0], [0f0, 0f0, 0f0] ]
+const defaultVecs = [ [0f0, 0f0, 0f0, 1f0], [0f0, 0f0, 0f0], [0f0, 0f0, 0f0] ]
 
+function load_obj(io::IOStream)
   values = [Float32[] for i = 1:3]
   smoothGroups = Dict{Int, Vector{Int}}()
   smoothGroupId = 0
@@ -59,7 +59,7 @@ function load_obj(io::IOStream)
     elseif tokens[1] == "v" || tokens[1] == "vt" || tokens[1] == "vn"
       valInd = tokens[1] == "v" ? 1 : (tokens[1] == "vt" ? 2 : 3)
       vals = map(v->parse(Float32, v), tokens[2:end])
-      append!(vals, defaults[valInd][length(vals)+1:end])
+      append!(vals, defaultVecs[valInd][length(vals)+1:end])
       append!(values[valInd], vals)
     elseif tokens[1] == "f"
       vals=map(tokens[2:end]) do t
@@ -68,7 +68,7 @@ function load_obj(io::IOStream)
         for i = 1:3
           ind = (i > length(indices) || isempty(indices[i])) ? 0 : parse(Int, indices[i])
           if ind < 0
-            ind = matrixcols(values[i], length(defaults[i])) + 1 + ind
+            ind = matrixcols(values[i], length(defaultVecs[i])) + 1 + ind
           end
           indVals[i, 1] = ind
         end
@@ -169,7 +169,7 @@ function add_normals(model::ObjModel, smoothGroups = Vector{Int}[])
       if face[normalsInd, i] == 0
         vertInd = face[posInd, i]
         faceArray = intersect(vertexFaces[vertInd], smoothFaces) # all faces in the current smoothing group that this vertex is part of
-        faceIndexTuple = (faceArray...)
+        faceIndexTuple = (faceArray...,)
         face[normalsInd, i] = get!(addedNormalIndices, faceIndexTuple) do
           normalsToAverage = faceNormals[:, faceArray]
           normal = averagenormals(normalsToAverage)
@@ -233,8 +233,9 @@ function append_face(indices::Vector{Int}, face::Vector{Int})
   end
 end
 
+const defaultVals = [0, 0, 0, 1]
+
 function get_indexed(model::ObjModel)
-  const defaultVals = [0, 0, 0, 1]
   @assert length(model.values) == length(model.valueIds)
   generatedVertices = Dict{ITuple, Int}()
   streams = map(model.values) do v
@@ -245,7 +246,7 @@ function get_indexed(model::ObjModel)
     @assert size(face, 1) == length(model.values)
     faceIndices = Int[]
     for i = 1:size(face, 2)
-      indTuple = (face[:, i]...)
+      indTuple = (face[:, i]...,)
       vertInd = get!(generatedVertices, indTuple) do
         for s = 1:length(indTuple)
           value = indTuple[s] != 0 ?
