@@ -18,7 +18,7 @@ mutable struct ObjModel
   valueIds::Vector{Symbol}
 
   ObjModel(ids, values, faces) = new(values, faces, copy(ids))
-  ObjModel() = new([:position], [Matrix{Float32}(3, 0)], Matrix{Int}[])
+  ObjModel() = new([:position], [Matrix{Float32}(undef, 3, 0)], Matrix{Int}[])
 end
 
 matrixcols(v::Vector, dim::Int) = div(length(v), dim)
@@ -64,7 +64,7 @@ function load_obj(io::IOStream)
     elseif tokens[1] == "f"
       vals=map(tokens[2:end]) do t
         indices = split(t, '/')
-        indVals = Matrix{Int}(3, 1)
+        indVals = Matrix{Int}(undef, 3, 1)
         for i = 1:3
           ind = (i > length(indices) || isempty(indices[i])) ? 0 : parse(Int, indices[i])
           if ind < 0
@@ -124,7 +124,7 @@ function facenormal(model::ObjModel, faceInd::Int)
 end
 
 function facenormals(model::ObjModel)
-  normals = Matrix{Float32}(3, length(model.faces))
+  normals = Matrix{Float32}(undef, 3, length(model.faces))
   for i = 1:length(model.faces)
     normals[:, i] = facenormal(model, i)
   end
@@ -266,7 +266,7 @@ end
 
 function add_values(model::ObjModel, id::Symbol, dim::Int; elType::DataType = Float32)
   @assert isvalid(model)
-  push!(model.values, Matrix{elType}(dim, 0))
+  push!(model.values, Matrix{elType}(undef, dim, 0))
   push!(model.valueIds, id)
   map!(model.faces, model.faces) do face
     vcat(face, fill(0, 1, size(face, 2)))
@@ -301,7 +301,7 @@ end
 @enum SMOOTHING SmoothNone=0 SmoothSides=1 SmoothAll=2
 
 function regularpoly(sides::Int, z::Float32 = 0f0; normals = true)
-	points = Matrix{Float32}(3, sides)
+	points = Matrix{Float32}(undef, 3, sides)
 	for i in 1:sides
 		ang = (i - 1) * 2pi / sides
 		s = sin(ang)
@@ -365,7 +365,7 @@ end
 
 function sphere(sides::Int, rh::Float32 = 1f0, rv::Float32 = 1f0; smooth::SMOOTHING = SmoothAll)
   vsides = div(sides, 2) - 1
-  points = Matrix{Float32}(3, sides*vsides+2)
+  points = Matrix{Float32}(undef, 3, sides*vsides+2)
   points[:, end] = [0, 0, rv]
   points[:, end-1] = [0, 0, -rv]
   faces = Matrix{Int}[]
