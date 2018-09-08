@@ -50,7 +50,7 @@ function load_obj(io::IOStream)
   for l in eachline(io)
     tokens = split(strip(l))
     comment = findfirst(t->t[1] == '#', tokens)
-    if comment != 0
+    if comment != nothing
       tokens = tokens[1:comment-1]
     end
     isempty(tokens) && continue
@@ -154,7 +154,7 @@ end
 function add_normals(model::ObjModel, smoothGroups = Vector{Int}[])
   posInd = findfirst(model.valueIds, :position)
   normalsInd = findfirst(model.valueIds, :normal)
-  if normalsInd == 0
+  if normalsInd == nothing
     normalsInd = add_values(model, :normal, 3)
   end
   vertexFaces = build_vertex_faces(model)
@@ -198,7 +198,7 @@ end
 function add_texcoord(model::ObjModel, direction::Vector{Float32} = [0f0, 0f0, 1f0], uniform::Bool = true)
   posInd = findfirst(model.valueIds, :position)
   tcInd = findfirst(model.valueIds, :texCoord)
-  if tcInd == 0
+  if tcInd == nothing
     tcInd = add_values(model, :texCoord, 2)
   end
   normalize!(direction)
