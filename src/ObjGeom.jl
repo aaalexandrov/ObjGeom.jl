@@ -3,7 +3,9 @@ __precompile__()
 module ObjGeom
 
 import Base: isvalid
-using LinearAlgebra
+import Statistics: mean
+import LinearAlgebra: cross, norm, dot
+
 
 export load_obj, get_indexed, isvalid, add_normals, add_values, delete_values_at, delete_unused_values,
        regularpoly, prism, pyramid, sphere,
