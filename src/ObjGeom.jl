@@ -13,7 +13,7 @@ export load_obj, get_indexed, isvalid, add_normals, add_values, delete_values_at
 
 const defaultIds = [:position, :texCoord, :normal]
 
-ITuple{N} = NTuple{N, Int}
+const ITuple{N} = NTuple{N, Int}
 
 mutable struct ObjModel
   values::Vector{Matrix} # vector of data streams, each containing a type of values (positions, texture coordinates, normals)
