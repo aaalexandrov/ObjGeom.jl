@@ -105,7 +105,7 @@ function isvalid(model::ObjModel, checkIndices::Bool = false)
 end
 
 function facenormal(model::ObjModel, faceInd::Int)
-  posInd = findfirst(model.valueIds, :position)
+  posInd = findfirst(isequal(:position), model.valueIds)
   positions = model.values[posInd]
   face = model.faces[faceInd]
   n = zeros(Float32, 3)
@@ -134,8 +134,8 @@ end
 averagenormals(normals::Matrix) = mean(normals, 2) # maybe change to calculate axis of bounding cone?
 
 function build_vertex_faces(model::ObjModel)
-  posInd = findfirst(model.valueIds, :position)
-  normalsInd = findfirst(model.valueIds, :normal)
+  posInd = findfirst(isequal(:position), model.valueIds)
+  normalsInd = findfirst(isequal(:normal), model.valueIds)
   vertexFaces = Dict{Int, Vector{Int}}() # map between vertex indices and faces they are part of
   for faceInd = 1:length(model.faces)
     face = model.faces[faceInd]
@@ -152,8 +152,8 @@ function build_vertex_faces(model::ObjModel)
 end
 
 function add_normals(model::ObjModel, smoothGroups = Vector{Int}[])
-  posInd = findfirst(model.valueIds, :position)
-  normalsInd = findfirst(model.valueIds, :normal)
+  posInd = findfirst(isequal(:position), model.valueIds)
+  normalsInd = findfirst(isequal(:normal), model.valueIds)
   if normalsInd == nothing
     normalsInd = add_values(model, :normal, 3)
   end
@@ -196,8 +196,8 @@ function add_normals(model::ObjModel, smoothGroups = Vector{Int}[])
 end
 
 function add_texcoord(model::ObjModel, direction::Vector{Float32} = [0f0, 0f0, 1f0], uniform::Bool = true)
-  posInd = findfirst(model.valueIds, :position)
-  tcInd = findfirst(model.valueIds, :texCoord)
+  posInd = findfirst(isequal(:position), model.valueIds)
+  tcInd = findfirst(isequal(:texCoord), model.valueIds)
   if tcInd == nothing
     tcInd = add_values(model, :texCoord, 2)
   end
