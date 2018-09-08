@@ -134,7 +134,7 @@ function facenormals(model::ObjModel)
   normals
 end
 
-averagenormals(normals::Matrix) = mean(normals, 2) # maybe change to calculate axis of bounding cone?
+averagenormals(normals::Matrix) = mean(normals; dims = 2) # maybe change to calculate axis of bounding cone?
 
 function build_vertex_faces(model::ObjModel)
   posInd = findfirst(isequal(:position), model.valueIds)

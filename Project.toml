@@ -1,7 +1,7 @@
 name = "ObjGeom"
 uuid = "3358aeb3-6d27-571a-8ec9-3ccc38d14486"
 authors = ["A. Alexandrov <greyalex2003@yahoo.com>"]
-version = "0.1.6"
+version = "0.1.7"
 
 [deps]
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
