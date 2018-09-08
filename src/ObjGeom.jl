@@ -111,9 +111,9 @@ function facenormal(model::ObjModel, faceInd::Int)
   face = model.faces[faceInd]
   n = zeros(Float32, 3)
   for i = 1:size(face, 2)-2
-    v1 = positions[:, face[posInd, i]]
-    v2 = positions[:, face[posInd, i+1]]
-    v3 = positions[:, face[posInd, i+2]]
+    v1 = positions[1:3, face[posInd, i]]
+    v2 = positions[1:3, face[posInd, i+1]]
+    v3 = positions[1:3, face[posInd, i+2]]
     n = cross(v1-v2, v2-v3)
     len = norm(n)
     if len > eps(len)
