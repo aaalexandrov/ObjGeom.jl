@@ -4,7 +4,7 @@ module ObjGeom
 
 import Base: isvalid
 import Statistics: mean
-import LinearAlgebra: cross, norm, dot
+import LinearAlgebra: cross, norm, dot, normalize!
 
 
 export load_obj, get_indexed, isvalid, add_normals, add_values, delete_values_at, delete_unused_values,
