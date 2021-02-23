@@ -212,7 +212,7 @@ function add_texcoord(model::ObjModel, direction::Vector{Float32} = [0f0, 0f0, 1
   v = cross(u, direction)
   proj = vcat(u', v', direction')
   uvw = proj * model.values[posInd]
-  ext = extrema(uvw, 2)
+  ext = extrema(uvw, dims=2)
   if uniform
     mini = minimum(map(t->t[1], ext))
     maxi = maximum(map(t->t[2], ext))
